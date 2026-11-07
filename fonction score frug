@@ -1,7 +1,7 @@
 clc;
 clear;
 close all;
-valFolder = 'food-11/test'; 
+valFolder = 'food-11/validation'; 
 
 % Creation du datastore pour lire les images
 imdsVal = imageDatastore(valFolder, ...
