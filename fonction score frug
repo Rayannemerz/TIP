@@ -1,0 +1,89 @@
+clc;
+clear;
+close all;
+valFolder = 'food-11/test'; 
+
+% Creation du datastore pour lire les images
+imdsVal = imageDatastore(valFolder, ...
+    'IncludeSubfolders', true, ...
+    'LabelSource', 'foldernames');
+
+% prediction
+fprintf('Calcul des prédictions... (attendre un peu)\n');
+[preds, scores] = classify(net, imdsVal);
+vraisLabels = imdsVal.Labels;
+
+% MATRICE DE CONFUSION
+C = confusionmat(vraisLabels, preds);
+nomClasses = categories(vraisLabels);
+numClasses = length(nomClasses);
+
+% Affichage graphique de confusion 
+figure;
+confusionchart(vraisLabels, preds);
+title('Matrice de Confusion');
+
+%calcul du F1-SCORE 
+precision = zeros(numClasses, 1);
+rappel = zeros(numClasses, 1);
+f1_classes = zeros(numClasses, 1);
+
+for i = 1:numClasses
+    TP = C(i,i); %true positive
+    FP = sum(C(:,i)) - TP; %false positive
+    FN = sum(C(i,:)) - TP; %false negative
+    
+    % formule precision = TP / (TP + FP) fiabilité
+    if (TP + FP) > 0
+        precision(i) = TP / (TP + FP);
+    else
+        precision(i) = 0;
+    end
+    
+    % formule rappel = TP / (TP + FN) pourcentage trouvé
+    if (TP + FN) > 0
+        rappel(i) = TP / (TP + FN);
+    else
+        rappel(i) = 0;
+    end
+    
+    % formule F1
+    if (precision(i) + rappel(i)) > 0
+        f1_classes(i) = 2 * (precision(i) * rappel(i)) / (precision(i) + rappel(i));
+    else
+        f1_classes(i) = 0;
+    end
+end
+
+% F1 Score global (moyenne)
+f1_macro = mean(f1_classes);
+
+% compter le nb de poids et biais du reseau automatiquement
+% J'ai trouvé ce bout de code sur internet pour compter les paramètres dans
+% Matlab (forum officiel MATLAB Answers)
+totalParams = 0;
+for i = 1:length(net.Layers)
+    if isprop(net.Layers(i), 'Learnables') && ~isempty(net.Layers(i).Learnables)
+        for j = 1:height(net.Layers(i).Learnables)
+            totalParams = totalParams + numel(net.Layers(i).Learnables.Value{j});
+        end
+    end
+end
+
+R_millions = totalParams / 1000000; % Convertir en millions
+
+% Formule Frug 
+w = 0.3;
+score_frugalite = f1_macro - 1 + (R_millions)^(-1/w);
+
+%affichage
+fprintf('Nombre de paramètres : %.2f M\n', R_millions);
+fprintf('Score F1 Moyen (Macro): %.4f\n', f1_macro);
+fprintf('Score de Frugalité   : %.4f\n', score_frugalite);
+
+
+% Afficher le F1 par classe dans le terminal pour voir quelle classe bug
+disp('F1 score par classe :');
+for i = 1:numClasses
+    fprintf('  - %s : %.2f %%\n', nomClasses{i}, f1_classes(i)*100);
+end
