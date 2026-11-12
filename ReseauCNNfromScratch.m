@@ -1,4 +1,3 @@
-```matlab
 clc;
 clear;
 close all;
@@ -61,4 +60,3 @@ save('ReseauCNNfromScratch.mat','net')
 save('SplitValidation.mat','imdsValidation')
 
 fprintf('sauvegardé\n')
-```
