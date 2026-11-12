@@ -57,8 +57,8 @@ net = trainNetwork(augimdsTrain,layers,options);
 
 fprintf('fini\n')
 
-save('monReseauCNNfromScratch.mat','net')
-save('monSplitValidation.mat','imdsValidation')
+save('ReseauCNNfromScratch.mat','net')
+save('SplitValidation.mat','imdsValidation')
 
 fprintf('sauvegardé\n')
 ```
