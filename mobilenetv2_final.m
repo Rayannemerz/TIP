@@ -21,6 +21,7 @@ augVal   = augmentedImageDatastore(inputSize(1:2), imdsVal);
 netPretrained = mobilenetv2;
 lgraph = layerGraph(netPretrained);
 
+%remplacement de la couche finale avec un FCLayer qui apprend 10 fois plus vite que les autres couches
 newFCLayer = fullyConnectedLayer(numClasses, ...
     Name="new_fc", ...
     WeightLearnRateFactor=10, ... 
@@ -29,6 +30,7 @@ newFCLayer = fullyConnectedLayer(numClasses, ...
 lgraph = replaceLayer(lgraph, "Logits", newFCLayer);
 lgraph = removeLayers(lgraph, "ClassificationLayer_Logits");
 
+%réduit pour ne pas saturer la RAM
 batchSize = 64;
 iterationsPerEpoch = floor(numel(imdsTrain.Files) / batchSize); 
 
