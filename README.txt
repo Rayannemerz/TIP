@@ -1,7 +1,7 @@
 CHALLENGE FOOD-11 - CLASSIFICATION D'IMAGES
 =======================================================================
 
-Groupe : MOHAMED TAYEB, LUCAS, RAYAN, TAIGA 
+Groupe : MOHAMED TAYEB, LUCAS, RAYANNE, TAIGA 
 
 Réseau final soumis au leaderboard : SqueezeNet v5 à gel partiel
 (0,728139 M paramètres). Score obtenu sur le serveur : Frugality = 0,7105 (F1 = 0,8369).
